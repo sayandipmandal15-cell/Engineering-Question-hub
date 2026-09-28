@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Question Bank - EngineeringHub</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            🎓 Engineering<span>Hub</span>
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="question-bank.html">Questions</a>
+            <a href="index.html#ai">AI Solver</a>
+            <a href="index.html#analysis">Analysis</a>
+            <a href="Engineering-Question-hub.html">Upload</a>
+        </nav>
+
+        <button class="login-btn">
+            Login
+        </button>
+
+    </header>
+
+
+    <!-- PAGE HEADER -->
+
+    <section class="page-header">
+
+        <p class="small-title">
+            ENGINEERING QUESTION BANK
+        </p>
+
+        <h1>
+            Previous Year Questions
+        </h1>
+
+        <p>
+            Search and explore engineering question papers
+            by branch, semester, subject and year.
+        </p>
+
+    </section>
+
+
+    <!-- FILTER SECTION -->
+
+    <section class="filter-section">
+
+        <div class="filter-box">
+
+            <label>University</label>
+
+            <select id="university">
+                <option value="">All Universities</option>
+                <option>University A</option>
+                <option>University B</option>
+                <option>University C</option>
+            </select>
+
+        </div>
+
+
+        <div class="filter-box">
+
+            <label>Branch</label>
+
+            <select id="branch">
+
+                <option value="">All Branches</option>
+                <option>CSE</option>
+                <option>ECE</option>
+                <option>EE</option>
+                <option>ME</option>
+                <option>CE</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-box">
+
+            <label>Semester</label>
+
+            <select id="semester">
+
+                <option value="">All Semesters</option>
+                <option>1st Semester</option>
+                <option>2nd Semester</option>
+                <option>3rd Semester</option>
+                <option>4th Semester</option>
+                <option>5th Semester</option>
+                <option>6th Semester</option>
+                <option>7th Semester</option>
+                <option>8th Semester</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-box">
+
+            <label>Year</label>
+
+            <select id="year">
+
+                <option value="">All Years</option>
+                <option>2026</option>
+                <option>2025</option>
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+                <option>2021</option>
+                <option>2020</option>
+
+            </select>
+
+        </div>
+
+
+        <button class="filter-button" onclick="filterQuestions()">
+            🔍 Search
+        </button>
+
+    </section>
+
+
+    <!-- QUESTION PAPERS -->
+
+    <section class="question-section">
+
+        <div class="question-title">
+
+            <h2>
+                📚 Available Question Papers
+            </h2>
+
+            <p id="resultText">
+                Showing all available papers
+            </p>
+
+        </div>
+
+
+        <div class="question-grid" id="questionGrid">
+
+
+            <!-- DBMS -->
+
+            <div class="question-card"
+                data-branch="CSE"
+                data-semester="5th Semester"
+                data-year="2026">
+
+                <div class="paper-icon">
+                    📄
+                </div>
+
+                <div>
+
+                    <span class="badge">
+                        2026
+                    </span>
+
+                    <h3>
+                        Database Management System
+                    </h3>
+
+                    <p>
+                        CSE • 5th Semester
+                    </p>
+
+                    <p class="university">
+                        University A
+                    </p>
+
+                </div>
+
+                <a href="paper.html" class="view-paper-btn">
+                    View Questions →
+                </a>
+
+            </div>
+
+
+            <!-- OPERATING SYSTEM -->
+
+            <div class="question-card"
+                data-branch="CSE"
+                data-semester="5th Semester"
+                data-year="2025">
+
+                <div class="paper-icon">
+                    📄
+                </div>
+
+                <div>
+
+                    <span class="badge">
+                        2025
+                    </span>
+
+                    <h3>
+                        Operating System
+                    </h3>
+
+                    <p>
+                        CSE • 5th Semester
+                    </p>
+
+                    <p class="university">
+                        University A
+                    </p>
+
+                </div>
+
+                <button onclick="viewPaper('Operating System 2025')">
+                    View Questions →
+                </button>
+
+            </div>
+
+
+            <!-- COMPUTER NETWORK -->
+
+            <div class="question-card"
+                data-branch="CSE"
+                data-semester="5th Semester"
+                data-year="2024">
+
+                <div class="paper-icon">
+                    📄
+                </div>
+
+                <div>
+
+                    <span class="badge">
+                        2024
+                    </span>
+
+                    <h3>
+                        Computer Network
+                    </h3>
+
+                    <p>
+                        CSE • 5th Semester
+                    </p>
+
+                    <p class="university">
+                        University B
+                    </p>
+
+                </div>
+
+                <button onclick="viewPaper('Computer Network 2024')">
+                    View Questions →
+                </button>
+
+            </div>
+
+
+            <!-- COMPUTER ARCHITECTURE -->
+
+            <div class="question-card"
+                data-branch="ECE"
+                data-semester="4th Semester"
+                data-year="2025">
+
+                <div class="paper-icon">
+                    📄
+                </div>
+
+                <div>
+
+                    <span class="badge">
+                        2025
+                    </span>
+
+                    <h3>
+                        Computer Architecture
+                    </h3>
+
+                    <p>
+                        ECE • 4th Semester
+                    </p>
+
+                    <p class="university">
+                        University A
+                    </p>
+
+                </div>
+
+                <button onclick="viewPaper('Computer Architecture 2025')">
+                    View Questions →
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <div class="footer-logo">
+            🎓 EngineeringHub
+        </div>
+
+        <p>
+            Engineering Question Bank & AI Learning Platform
+        </p>
+
+        <p class="copyright">
+            © 2026 EngineeringHub. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+    <script src="question-bank.js"></script>
+
+</body>
+
+</html>

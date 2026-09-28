@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Analysis - EngineeringHub</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            🎓 Engineering<span>Hub</span>
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="question-bank.html">Questions</a>
+            <a href="ai-analysis.html">AI Analysis</a>
+            <a href="upload.html">Upload</a>
+        </nav>
+
+    </header>
+
+
+    <main class="container">
+
+        <h1>🤖 AI Question Paper Analysis</h1>
+
+        <p>
+            Upload or select a question paper and let AI analyze
+            important topics, repeated questions and exam patterns.
+        </p>
+
+
+        <section class="filter-section">
+
+            <div class="filter-box">
+
+                <label>Select Question Paper</label>
+
+                <select id="paperSelect">
+
+                    <option value="">
+                        Loading question papers...
+                    </option>
+
+                </select>
+
+            </div>
+
+            <button
+                class="filter-button"
+                onclick="analyzePaper()"
+            >
+                🤖 Analyze with AI
+            </button>
+
+        </section>
+
+
+        <section class="question-section">
+
+            <div id="analysisStatus">
+                Select a question paper to start AI analysis.
+            </div>
+
+
+            <div id="analysisResult">
+
+                <h2>📊 Analysis Result</h2>
+
+                <div class="question-card">
+
+                    <h3>🔥 Important Topics</h3>
+
+                    <p id="importantTopics">
+                        AI analysis will appear here.
+                    </p>
+
+                </div>
+
+
+                <div class="question-card">
+
+                    <h3>🔁 Repeated Questions / Topics</h3>
+
+                    <p id="repeatedTopics">
+                        AI analysis will appear here.
+                    </p>
+
+                </div>
+
+
+                <div class="question-card">
+
+                    <h3>⭐ Important Questions</h3>
+
+                    <p id="importantQuestions">
+                        AI analysis will appear here.
+                    </p>
+
+                </div>
+
+
+                <div class="question-card">
+
+                    <h3>📚 Study Recommendation</h3>
+
+                    <p id="studyRecommendation">
+                        AI analysis will appear here.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <div class="footer-logo">
+            🎓 EngineeringHub
+        </div>
+
+        <p>
+            Engineering Question Bank & AI Learning Platform
+        </p>
+
+        <p class="copyright">
+            © 2026 EngineeringHub. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="ai-analysis.js"></script>
+
+</body>
+
+</html>

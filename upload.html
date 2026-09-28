@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Upload Question Paper</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">Engineering Question Hub</div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="question-bank.html">Questions</a>
+            <a href="upload.html">Upload</a>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <h1>Upload Question Paper</h1>
+
+        <p>
+            Upload your Engineering previous-year question paper.
+        </p>
+
+        <form id="uploadForm">
+
+            <label>University / Board</label>
+            <input type="text" id="university" required>
+
+            <label>Branch</label>
+            <input type="text" id="branch" placeholder="CSE, ECE, ME, etc." required>
+
+            <label>Semester</label>
+            <input type="text" id="semester" placeholder="5th Semester" required>
+
+            <label>Subject</label>
+            <input type="text" id="subject" required>
+
+            <label>Exam Year</label>
+            <input type="number" id="exam_year" placeholder="2026" required>
+
+            <label>Question Paper</label>
+            <input
+                type="file"
+                id="questionFile"
+                accept=".pdf,.jpg,.jpeg,.png"
+                required
+            >
+
+            <label>Description</label>
+            <textarea
+                id="description"
+                placeholder="Any additional information..."
+            ></textarea>
+
+            <button type="submit">
+                Upload Question Paper
+            </button>
+
+        </form>
+
+        <p id="uploadStatus"></p>
+
+    </main>
+
+    <script src="script.js"></script>
+    <script src="upload.js"></script>
+
+</body>
+</html>

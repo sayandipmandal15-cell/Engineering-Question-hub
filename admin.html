@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+    <script src="supabase.js"></script>
+
+</head>
+
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            Engineering Question Hub
+        </div>
+
+        <nav>
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="question-bank.html">
+                Questions
+            </a>
+
+            <a href="upload.html">
+                Upload
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ================= ADMIN DASHBOARD ================= -->
+
+    <main class="container">
+
+        <h1>
+            👑 Admin Dashboard
+        </h1>
+
+        <p>
+            এখান থেকে uploaded question papers
+            manage করতে পারবে।
+        </p>
+
+
+        <!-- ADMIN STATUS -->
+
+        <p id="adminStatus">
+            ⏳ Checking admin access...
+        </p>
+
+
+        <!-- PAPER LIST -->
+
+        <div id="adminPaperList">
+
+            <p>
+                ⏳ Loading papers...
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <script src="admin.js"></script>
+
+</body>
+
+</html>

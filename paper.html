@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Question Paper - EngineeringHub</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            🎓 Engineering<span>Hub</span>
+        </div>
+
+        <nav>
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="question-bank.html">
+                Questions
+            </a>
+
+            <a href="index.html#ai">
+                AI Solver
+            </a>
+
+            <a href="index.html#analysis">
+                Analysis
+            </a>
+
+            <a href="Engineering-Question-hub.html">
+                Upload
+            </a>
+
+        </nav>
+
+        <button class="login-btn">
+            Login
+        </button>
+
+    </header>
+
+
+    <!-- PAPER HEADER -->
+
+    <section class="paper-header">
+
+        <a href="question-bank.html"
+            class="back-link">
+            ← Back to Question Bank
+        </a>
+
+        <p class="small-title">
+            PREVIOUS YEAR QUESTION PAPER
+        </p>
+
+        <h1>
+            Database Management System
+        </h1>
+
+        <p>
+            CSE • 5th Semester • 2026
+        </p>
+
+        <div class="paper-info">
+
+            <span>
+                📚 DBMS
+            </span>
+
+            <span>
+                📅 2026
+            </span>
+
+            <span>
+                🎓 CSE
+            </span>
+
+            <span>
+                📖 5th Semester
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- QUESTIONS -->
+
+    <main class="paper-container">
+
+
+        <!-- QUESTION 1 -->
+
+        <div class="single-question">
+
+            <div class="question-number">
+                Question 1
+            </div>
+
+            <h2>
+                What is a Database Management System?
+            </h2>
+
+            <p>
+                Explain the basic concept of DBMS and
+                mention its major advantages.
+            </p>
+
+            <button
+                class="ai-solve-btn"
+                onclick="solveWithAI(
+                'What is a Database Management System? Explain the basic concept of DBMS and mention its major advantages.'
+                )">
+
+                🤖 Solve with AI
+
+            </button>
+
+            <div class="answer-box"
+                id="answer1">
+
+            </div>
+
+        </div>
+
+
+        <!-- QUESTION 2 -->
+
+        <div class="single-question">
+
+            <div class="question-number">
+                Question 2
+            </div>
+
+            <h2>
+                Explain Database Normalization.
+            </h2>
+
+            <p>
+                Explain normalization and describe
+                1NF, 2NF and 3NF.
+            </p>
+
+            <button
+                class="ai-solve-btn"
+                onclick="solveWithAI(
+                'Explain database normalization and describe 1NF, 2NF and 3NF.'
+                )">
+
+                🤖 Solve with AI
+
+            </button>
+
+            <div class="answer-box"
+                id="answer2">
+
+            </div>
+
+        </div>
+
+
+        <!-- QUESTION 3 -->
+
+        <div class="single-question">
+
+            <div class="question-number">
+                Question 3
+            </div>
+
+            <h2>
+                What is a Primary Key?
+            </h2>
+
+            <p>
+                Define primary key and explain why it is
+                important in a relational database.
+            </p>
+
+            <button
+                class="ai-solve-btn"
+                onclick="solveWithAI(
+                'What is a primary key? Explain why it is important in a relational database.'
+                )">
+
+                🤖 Solve with AI
+
+            </button>
+
+            <div class="answer-box"
+                id="answer3">
+
+            </div>
+
+        </div>
+
+
+        <!-- QUESTION 4 -->
+
+        <div class="single-question">
+
+            <div class="question-number">
+                Question 4
+            </div>
+
+            <h2>
+                What is SQL?
+            </h2>
+
+            <p>
+                Explain SQL and discuss some commonly
+                used SQL commands.
+            </p>
+
+            <button
+                class="ai-solve-btn"
+                onclick="solveWithAI(
+                'What is SQL? Explain SQL and discuss commonly used SQL commands.'
+                )">
+
+                🤖 Solve with AI
+
+            </button>
+
+            <div class="answer-box"
+                id="answer4">
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <div class="footer-logo">
+            🎓 EngineeringHub
+        </div>
+
+        <p>
+            Engineering Question Bank & AI Learning Platform
+        </p>
+
+        <p class="copyright">
+            © 2026 EngineeringHub
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="paper-ai.js"></script>
+
+</body>
+
+</html>

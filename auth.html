@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Engineering Question Hub</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+
+        <div class="logo">
+            🎓 Engineering<span>Hub</span>
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="question-bank.html">Questions</a>
+            <a href="upload.html">Upload</a>
+        </nav>
+
+    </header>
+
+
+    <!-- LOGIN -->
+    <main class="auth-page">
+
+        <div class="auth-card">
+
+            <div class="auth-icon">
+                🔐
+            </div>
+
+            <h1>Login / Sign Up</h1>
+
+            <p class="auth-subtitle">
+                Login to access Engineering Question Hub
+            </p>
+
+
+            <form id="authForm">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    required
+                >
+
+
+                <button
+                    type="button"
+                    class="auth-login-btn"
+                    onclick="loginUser()">
+                    Login
+                </button>
+
+
+                <button
+                    type="button"
+                    class="auth-signup-btn"
+                    onclick="createAccount()">
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <p id="authStatus" class="auth-status"></p>
+
+        </div>
+
+    </main>
+
+
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+
+</body>
+
+</html>

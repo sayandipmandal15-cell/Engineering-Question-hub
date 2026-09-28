@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Upload Question Paper - EngineeringHub</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            🎓 Engineering<span>Hub</span>
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="question-bank.html">Questions</a>
+            <a href="index.html#ai">AI Solver</a>
+            <a href="index.html#analysis">Analysis</a>
+            <a href="upload.html">Upload</a>
+        </nav>
+
+        <button class="login-btn">
+            Login
+        </button>
+
+    </header>
+
+
+    <!-- HEADER -->
+
+    <section class="upload-header">
+
+        <p class="small-title">
+            COMMUNITY QUESTION BANK
+        </p>
+
+        <h1>
+            Upload a Question Paper
+        </h1>
+
+        <p>
+            Help other engineering students by sharing
+            previous or latest year question papers.
+        </p>
+
+    </section>
+
+
+    <!-- UPLOAD FORM -->
+
+    <main class="upload-container">
+
+        <form id="uploadForm"
+            onsubmit="submitQuestionPaper(event)">
+
+            <div class="upload-card">
+
+                <h2>
+                    📄 Question Paper Details
+                </h2>
+
+                <p class="form-description">
+                    Enter the details of the question paper
+                    before uploading it.
+                </p>
+
+
+                <!-- UNIVERSITY -->
+
+                <div class="form-group">
+
+                    <label>
+                        University / Board
+                    </label>
+
+                    <input
+                        type="text"
+                        id="uploadUniversity"
+                        placeholder="Enter university name"
+                        required>
+
+                </div>
+
+
+                <!-- BRANCH -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Branch
+                        </label>
+
+                        <select
+                            id="uploadBranch"
+                            required>
+
+                            <option value="">
+                                Select Branch
+                            </option>
+
+                            <option>
+                                CSE
+                            </option>
+
+                            <option>
+                                ECE
+                            </option>
+
+                            <option>
+                                EE
+                            </option>
+
+                            <option>
+                                ME
+                            </option>
+
+                            <option>
+                                CE
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEMESTER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Semester
+                        </label>
+
+                        <select
+                            id="uploadSemester"
+                            required>
+
+                            <option value="">
+                                Select Semester
+                            </option>
+
+                            <option>1st Semester</option>
+                            <option>2nd Semester</option>
+                            <option>3rd Semester</option>
+                            <option>4th Semester</option>
+                            <option>5th Semester</option>
+                            <option>6th Semester</option>
+                            <option>7th Semester</option>
+                            <option>8th Semester</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUBJECT + YEAR -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Subject
+                        </label>
+
+                        <input
+                            type="text"
+                            id="uploadSubject"
+                            placeholder="Example: DBMS"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Exam Year
+                        </label>
+
+                        <select
+                            id="uploadYear"
+                            required>
+
+                            <option value="">
+                                Select Year
+                            </option>
+
+                            <option>2026</option>
+                            <option>2025</option>
+                            <option>2024</option>
+                            <option>2023</option>
+                            <option>2022</option>
+                            <option>2021</option>
+                            <option>2020</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FILE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Question Paper File
+                    </label>
+
+                    <div class="file-upload">
+
+                        <input
+                            type="file"
+                            id="questionFile"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required>
+
+                        <div class="file-text">
+
+                            📤 Choose PDF or Image
+
+                            <small>
+                                PDF, JPG, JPEG or PNG
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label>
+                        Additional Information
+                    </label>
+
+                    <textarea
+                        id="uploadDescription"
+                        rows="4"
+                        placeholder="Optional information about this question paper...">
+                    </textarea>
+
+                </div>
+
+
+                <!-- AGREEMENT -->
+
+                <label class="agreement">
+
+                    <input
+                        type="checkbox"
+                        id="uploadAgreement"
+                        required>
+
+                    <span>
+                        I confirm that the information provided
+                        is correct.
+                    </span>
+
+                </label>
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="upload-submit">
+
+                    📤 Upload Question Paper
+
+                </button>
+
+
+                <!-- STATUS -->
+
+                <div
+                    id="uploadStatus"
+                    class="upload-status">
+                </div>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <div class="footer-logo">
+            🎓 EngineeringHub
+        </div>
+
+        <p>
+            Engineering Question Bank & AI Learning Platform
+        </p>
+
+        <p class="copyright">
+            © 2026 EngineeringHub
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
