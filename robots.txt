@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sayandipmandal15-cell.github.io/Engineering-Question-hub/sitemap.xml
