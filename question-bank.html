@@ -9,13 +9,14 @@
 
     <link rel="stylesheet" href="style.css">
 
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
+    <!-- ================= NAVBAR ================= -->
 
     <header class="navbar">
 
@@ -24,21 +25,43 @@
         </div>
 
         <nav>
-            <a href="index.html">Home</a>
-            <a href="question-bank.html">Questions</a>
-            <a href="index.html#ai">AI Solver</a>
-            <a href="index.html#analysis">Analysis</a>
-            <a href="Engineering-Question-hub.html">Upload</a>
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="question-bank.html">
+                Questions
+            </a>
+
+            <a href="index.html#ai">
+                AI Solver
+            </a>
+
+            <a href="index.html#analysis">
+                Analysis
+            </a>
+
+            <a href="upload.html">
+                Upload
+            </a>
+
         </nav>
 
-        <button class="login-btn">
-            Login
+
+        <!-- Login / Account -->
+
+        <button
+            class="login-btn"
+            onclick="window.location.href='auth.html'">
+            🔐 Login
         </button>
 
     </header>
 
 
-    <!-- PAGE HEADER -->
+
+    <!-- ================= PAGE HEADER ================= -->
 
     <section class="page-header">
 
@@ -58,91 +81,189 @@
     </section>
 
 
-    <!-- FILTER SECTION -->
+
+    <!-- ================= FILTER SECTION ================= -->
 
     <section class="filter-section">
 
+
         <div class="filter-box">
 
-            <label>University</label>
+            <label>
+                University
+            </label>
 
             <select id="university">
-                <option value="">All Universities</option>
-                <option>University A</option>
-                <option>University B</option>
-                <option>University C</option>
+
+                <option value="">
+                    All Universities
+                </option>
+
+                <option>
+                    University A
+                </option>
+
+                <option>
+                    University B
+                </option>
+
+                <option>
+                    University C
+                </option>
+
             </select>
 
         </div>
 
 
+
         <div class="filter-box">
 
-            <label>Branch</label>
+            <label>
+                Branch
+            </label>
 
             <select id="branch">
 
-                <option value="">All Branches</option>
-                <option>CSE</option>
-                <option>ECE</option>
-                <option>EE</option>
-                <option>ME</option>
-                <option>CE</option>
+                <option value="">
+                    All Branches
+                </option>
+
+                <option>
+                    CSE
+                </option>
+
+                <option>
+                    ECE
+                </option>
+
+                <option>
+                    EE
+                </option>
+
+                <option>
+                    ME
+                </option>
+
+                <option>
+                    CE
+                </option>
 
             </select>
 
         </div>
 
 
+
         <div class="filter-box">
 
-            <label>Semester</label>
+            <label>
+                Semester
+            </label>
 
             <select id="semester">
 
-                <option value="">All Semesters</option>
-                <option>1st Semester</option>
-                <option>2nd Semester</option>
-                <option>3rd Semester</option>
-                <option>4th Semester</option>
-                <option>5th Semester</option>
-                <option>6th Semester</option>
-                <option>7th Semester</option>
-                <option>8th Semester</option>
+                <option value="">
+                    All Semesters
+                </option>
+
+                <option>
+                    1st Semester
+                </option>
+
+                <option>
+                    2nd Semester
+                </option>
+
+                <option>
+                    3rd Semester
+                </option>
+
+                <option>
+                    4th Semester
+                </option>
+
+                <option>
+                    5th Semester
+                </option>
+
+                <option>
+                    6th Semester
+                </option>
+
+                <option>
+                    7th Semester
+                </option>
+
+                <option>
+                    8th Semester
+                </option>
 
             </select>
 
         </div>
+
 
 
         <div class="filter-box">
 
-            <label>Year</label>
+            <label>
+                Year
+            </label>
 
             <select id="year">
 
-                <option value="">All Years</option>
-                <option>2026</option>
-                <option>2025</option>
-                <option>2024</option>
-                <option>2023</option>
-                <option>2022</option>
-                <option>2021</option>
-                <option>2020</option>
+                <option value="">
+                    All Years
+                </option>
+
+                <option>
+                    2026
+                </option>
+
+                <option>
+                    2025
+                </option>
+
+                <option>
+                    2024
+                </option>
+
+                <option>
+                    2023
+                </option>
+
+                <option>
+                    2022
+                </option>
+
+                <option>
+                    2021
+                </option>
+
+                <option>
+                    2020
+                </option>
 
             </select>
 
         </div>
 
 
-        <button class="filter-button" onclick="filterQuestions()">
+
+        <button
+            class="filter-button"
+            onclick="filterQuestions()">
+
             🔍 Search
+
         </button>
 
     </section>
 
 
-    <!-- QUESTION PAPERS -->
+
+    <!-- ================= QUESTION PAPERS ================= -->
 
     <section class="question-section">
 
@@ -159,12 +280,16 @@
         </div>
 
 
-        <div class="question-grid" id="questionGrid">
+
+        <div
+            class="question-grid"
+            id="questionGrid">
 
 
-            <!-- DBMS -->
+            <!-- ================= DBMS ================= -->
 
-            <div class="question-card"
+            <div
+                class="question-card"
                 data-branch="CSE"
                 data-semester="5th Semester"
                 data-year="2026">
@@ -193,16 +318,22 @@
 
                 </div>
 
-                <a href="paper.html" class="view-paper-btn">
+                <a
+                    href="paper.html"
+                    class="view-paper-btn">
+
                     View Questions →
+
                 </a>
 
             </div>
 
 
-            <!-- OPERATING SYSTEM -->
 
-            <div class="question-card"
+            <!-- ================= OPERATING SYSTEM ================= -->
+
+            <div
+                class="question-card"
                 data-branch="CSE"
                 data-semester="5th Semester"
                 data-year="2025">
@@ -231,16 +362,21 @@
 
                 </div>
 
-                <button onclick="viewPaper('Operating System 2025')">
+                <button
+                    onclick="viewPaper('Operating System 2025')">
+
                     View Questions →
+
                 </button>
 
             </div>
 
 
-            <!-- COMPUTER NETWORK -->
 
-            <div class="question-card"
+            <!-- ================= COMPUTER NETWORK ================= -->
+
+            <div
+                class="question-card"
                 data-branch="CSE"
                 data-semester="5th Semester"
                 data-year="2024">
@@ -269,16 +405,21 @@
 
                 </div>
 
-                <button onclick="viewPaper('Computer Network 2024')">
+                <button
+                    onclick="viewPaper('Computer Network 2024')">
+
                     View Questions →
+
                 </button>
 
             </div>
 
 
-            <!-- COMPUTER ARCHITECTURE -->
 
-            <div class="question-card"
+            <!-- ================= COMPUTER ARCHITECTURE ================= -->
+
+            <div
+                class="question-card"
                 data-branch="ECE"
                 data-semester="4th Semester"
                 data-year="2025">
@@ -307,8 +448,11 @@
 
                 </div>
 
-                <button onclick="viewPaper('Computer Architecture 2025')">
+                <button
+                    onclick="viewPaper('Computer Architecture 2025')">
+
                     View Questions →
+
                 </button>
 
             </div>
@@ -319,7 +463,8 @@
     </section>
 
 
-    <!-- FOOTER -->
+
+    <!-- ================= FOOTER ================= -->
 
     <footer>
 
@@ -338,8 +483,13 @@
     </footer>
 
 
+
+    <!-- ================= JAVASCRIPT ================= -->
+
     <script src="script.js"></script>
+
     <script src="question-bank.js"></script>
+
 
 </body>
 
