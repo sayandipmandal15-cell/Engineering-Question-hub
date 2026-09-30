@@ -50,6 +50,14 @@
 
         </nav>
 
+        <!-- Account / Login button -->
+        <button
+            class="login-btn"
+            onclick="window.location.href='auth.html'"
+        >
+            🔐 Login
+        </button>
+
     </header>
 
 
@@ -62,31 +70,268 @@
         </h1>
 
         <p>
-            এখান থেকে uploaded question papers
-            manage করতে পারবে।
+            Question papers এবং administration manage করার dashboard।
         </p>
 
 
-        <!-- ADMIN STATUS -->
+        <!-- ================= ADMIN STATUS ================= -->
 
         <p id="adminStatus">
             ⏳ Checking admin access...
         </p>
 
 
-        <!-- PAPER LIST -->
+        <!-- ================================================= -->
+        <!-- ADMIN OVERVIEW -->
+        <!-- ================================================= -->
 
-        <div id="adminPaperList">
+        <section
+            id="adminOverview"
+            class="admin-overview-section"
+        >
+
+            <div class="admin-overview-header">
+
+                <div>
+
+                    <h2>
+                        📊 Admin Overview
+                    </h2>
+
+                    <p>
+                        Website-এর user এবং admin-এর বর্তমান summary
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-overview-grid">
+
+
+                <!-- ================= TOTAL USERS ================= -->
+
+                <div class="overview-card users-card">
+
+                    <div class="overview-card-top">
+
+                        <div class="overview-icon">
+                            👤
+                        </div>
+
+                        <span class="overview-label">
+                            USERS
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="totalUsers"
+                        class="overview-number"
+                    >
+                        -
+                    </div>
+
+
+                    <div class="overview-title">
+                        Total Users
+                    </div>
+
+
+                    <div class="overview-description">
+                        Registered users
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= TOTAL ADMINS ================= -->
+
+                <div class="overview-card admins-card">
+
+                    <div class="overview-card-top">
+
+                        <div class="overview-icon">
+                            🛡️
+                        </div>
+
+                        <span class="overview-label">
+                            ADMINS
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="totalAdmins"
+                        class="overview-number"
+                    >
+                        -
+                    </div>
+
+
+                    <div class="overview-title">
+                        Total Admins
+                    </div>
+
+
+                    <div class="overview-description">
+                        Active admin accounts
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= ONLINE USERS ================= -->
+
+                <div class="overview-card online-card">
+
+                    <div class="overview-card-top">
+
+                        <div class="overview-icon">
+                            🟢
+                        </div>
+
+                        <span class="overview-label">
+                            ONLINE
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="onlineUsers"
+                        class="overview-number"
+                    >
+                        -
+                    </div>
+
+
+                    <div class="overview-title">
+                        Currently Online
+                    </div>
+
+
+                    <div class="overview-description">
+                        Users currently online
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- OWNER ONLY SECTION -->
+        <!-- ================================================= -->
+
+        <section
+            id="ownerManagement"
+            style="display:none;"
+        >
+
+            <h2>
+                👑 Owner Management
+            </h2>
 
             <p>
-                ⏳ Loading papers...
+                এখান থেকে Owner অন্য User-কে Admin Access দিতে
+                অথবা Admin Access remove করতে পারবে।
             </p>
 
-        </div>
+
+            <!-- OWNER INFO -->
+
+            <div
+                id="ownerInfo"
+                class="admin-user-list"
+            >
+
+                <p>
+                    ⏳ Loading owner information...
+                </p>
+
+            </div>
+
+
+            <!-- ADMIN LIST -->
+
+            <h3>
+                🛡️ Admin List
+            </h3>
+
+            <div
+                id="adminUserList"
+                class="admin-user-list"
+            >
+
+                <p>
+                    ⏳ Loading admins...
+                </p>
+
+            </div>
+
+
+            <!-- USER LIST -->
+
+            <h3>
+                👤 User List
+            </h3>
+
+            <div
+                id="normalUserList"
+                class="admin-user-list"
+            >
+
+                <p>
+                    ⏳ Loading users...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- QUESTION PAPER MANAGEMENT -->
+        <!-- ================================================= -->
+
+        <section id="questionPaperManagement">
+
+            <h2>
+                📚 Question Paper Management
+            </h2>
+
+            <p>
+                Uploaded question papers এখান থেকে manage করতে পারবে।
+            </p>
+
+
+            <div id="adminPaperList">
+
+                <p>
+                    ⏳ Loading papers...
+                </p>
+
+            </div>
+
+        </section>
+
 
     </main>
 
 
+    <!-- Main website + Account system -->
+    <script src="script.js"></script>
+
+    <!-- Admin dashboard functionality -->
     <script src="admin.js"></script>
 
 </body>
