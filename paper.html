@@ -5,12 +5,17 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
+    <meta
+        name="viewport"
         content="width=device-width, initial-scale=1.0">
 
     <title>Question Paper - EngineeringHub</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
 
 </head>
 
@@ -18,13 +23,14 @@
 <body>
 
 
-    <!-- NAVBAR -->
+    <!-- ================= NAVBAR ================= -->
 
     <header class="navbar">
 
         <div class="logo">
             🎓 Engineering<span>Hub</span>
         </div>
+
 
         <nav>
 
@@ -44,39 +50,55 @@
                 Analysis
             </a>
 
-            <a href="Engineering-Question-hub.html">
+            <a href="upload.html">
                 Upload
             </a>
 
         </nav>
 
-        <button class="login-btn">
-            Login
+
+        <!-- Login / Account -->
+
+        <button
+            class="login-btn"
+            onclick="window.location.href='auth.html'">
+
+            🔐 Login
+
         </button>
 
     </header>
 
 
-    <!-- PAPER HEADER -->
+
+    <!-- ================= PAPER HEADER ================= -->
 
     <section class="paper-header">
 
-        <a href="question-bank.html"
+
+        <a
+            href="question-bank.html"
             class="back-link">
+
             ← Back to Question Bank
+
         </a>
+
 
         <p class="small-title">
             PREVIOUS YEAR QUESTION PAPER
         </p>
 
+
         <h1>
             Database Management System
         </h1>
 
+
         <p>
             CSE • 5th Semester • 2026
         </p>
+
 
         <div class="paper-info">
 
@@ -101,12 +123,13 @@
     </section>
 
 
-    <!-- QUESTIONS -->
+
+    <!-- ================= QUESTIONS ================= -->
 
     <main class="paper-container">
 
 
-        <!-- QUESTION 1 -->
+        <!-- ================= QUESTION 1 ================= -->
 
         <div class="single-question">
 
@@ -114,14 +137,17 @@
                 Question 1
             </div>
 
+
             <h2>
                 What is a Database Management System?
             </h2>
+
 
             <p>
                 Explain the basic concept of DBMS and
                 mention its major advantages.
             </p>
+
 
             <button
                 class="ai-solve-btn"
@@ -133,7 +159,9 @@
 
             </button>
 
-            <div class="answer-box"
+
+            <div
+                class="answer-box"
                 id="answer1">
 
             </div>
@@ -141,7 +169,8 @@
         </div>
 
 
-        <!-- QUESTION 2 -->
+
+        <!-- ================= QUESTION 2 ================= -->
 
         <div class="single-question">
 
@@ -149,14 +178,17 @@
                 Question 2
             </div>
 
+
             <h2>
                 Explain Database Normalization.
             </h2>
+
 
             <p>
                 Explain normalization and describe
                 1NF, 2NF and 3NF.
             </p>
+
 
             <button
                 class="ai-solve-btn"
@@ -168,7 +200,9 @@
 
             </button>
 
-            <div class="answer-box"
+
+            <div
+                class="answer-box"
                 id="answer2">
 
             </div>
@@ -176,7 +210,8 @@
         </div>
 
 
-        <!-- QUESTION 3 -->
+
+        <!-- ================= QUESTION 3 ================= -->
 
         <div class="single-question">
 
@@ -184,14 +219,17 @@
                 Question 3
             </div>
 
+
             <h2>
                 What is a Primary Key?
             </h2>
+
 
             <p>
                 Define primary key and explain why it is
                 important in a relational database.
             </p>
+
 
             <button
                 class="ai-solve-btn"
@@ -203,7 +241,9 @@
 
             </button>
 
-            <div class="answer-box"
+
+            <div
+                class="answer-box"
                 id="answer3">
 
             </div>
@@ -211,7 +251,8 @@
         </div>
 
 
-        <!-- QUESTION 4 -->
+
+        <!-- ================= QUESTION 4 ================= -->
 
         <div class="single-question">
 
@@ -219,14 +260,17 @@
                 Question 4
             </div>
 
+
             <h2>
                 What is SQL?
             </h2>
+
 
             <p>
                 Explain SQL and discuss some commonly
                 used SQL commands.
             </p>
+
 
             <button
                 class="ai-solve-btn"
@@ -238,7 +282,9 @@
 
             </button>
 
-            <div class="answer-box"
+
+            <div
+                class="answer-box"
                 id="answer4">
 
             </div>
@@ -249,7 +295,8 @@
     </main>
 
 
-    <!-- FOOTER -->
+
+    <!-- ================= FOOTER ================= -->
 
     <footer>
 
@@ -257,9 +304,11 @@
             🎓 EngineeringHub
         </div>
 
+
         <p>
             Engineering Question Bank & AI Learning Platform
         </p>
+
 
         <p class="copyright">
             © 2026 EngineeringHub
@@ -268,11 +317,13 @@
     </footer>
 
 
+
+    <!-- ================= JAVASCRIPT ================= -->
+
     <script src="script.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
     <script src="paper-ai.js"></script>
+
 
 </body>
 
