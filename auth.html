@@ -1,21 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login - Engineering Question Hub</title>
+    <title>Login | EngineeringHub</title>
 
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background:
+                linear-gradient(135deg, #eef4ff 0%, #f8fbff 45%, #eef7ff 100%);
+            color: #172033;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 76px;
+            background: rgba(255, 255, 255, 0.96);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            border-bottom: 1px solid #e3e9f5;
+            box-shadow: 0 4px 18px rgba(40, 70, 120, 0.08);
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            color: #172033;
+        }
+
+        .logo span {
+            color: #3867ff;
+        }
+
+        .navbar nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar nav a {
+            text-decoration: none;
+            color: #26344d;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .navbar nav a:hover {
+            color: #3867ff;
+        }
+
+        .login-btn {
+            border: none;
+            background: linear-gradient(135deg, #3867ff, #6748ff);
+            color: white;
+            padding: 11px 19px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 7px 18px rgba(56, 103, 255, 0.25);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(56, 103, 255, 0.32);
+        }
+
+        /* =========================
+           LOGIN AREA
+        ========================= */
+
+        .auth-wrapper {
+            min-height: calc(100vh - 76px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 45px 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 470px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 38px;
+            box-shadow:
+                0 20px 55px rgba(38, 67, 120, 0.14),
+                0 4px 12px rgba(38, 67, 120, 0.06);
+            border: 1px solid #e5ebf7;
+        }
+
+        .auth-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8eeff, #f0eaff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            box-shadow: 0 8px 22px rgba(56, 103, 255, 0.12);
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 31px;
+            font-weight: 800;
+            color: #172033;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: #6d7890;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #26344d;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            padding: 0 15px;
+            border: 1px solid #d9e1ef;
+            border-radius: 12px;
+            background: #f9fbff;
+            color: #172033;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-group input::placeholder {
+            color: #9aa5b8;
+        }
+
+        .form-group input:focus {
+            border-color: #3867ff;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(56, 103, 255, 0.10);
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .auth-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .auth-btn {
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .create-btn {
+            background: linear-gradient(135deg, #3867ff, #6748ff);
+            color: white;
+            box-shadow: 0 8px 20px rgba(56, 103, 255, 0.22);
+        }
+
+        .login-submit-btn {
+            background: #edf2ff;
+            color: #3158d8;
+            border: 1px solid #d8e1ff;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .create-btn:hover {
+            box-shadow: 0 12px 25px rgba(56, 103, 255, 0.30);
+        }
+
+        .login-submit-btn:hover {
+            background: #e1e9ff;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        #authStatus {
+            min-height: 22px;
+            margin-top: 18px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4f5d75;
+        }
+
+        .auth-info {
+            margin-top: 24px;
+            padding: 15px;
+            background: #f5f8ff;
+            border: 1px solid #e3e9f7;
+            border-radius: 12px;
+            text-align: center;
+            color: #65718a;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .navbar nav {
+                display: none;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .auth-wrapper {
+                padding: 30px 16px;
+            }
+
+            .auth-card {
+                padding: 28px 22px;
+                border-radius: 20px;
+            }
+
+            .auth-title {
+                font-size: 27px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .auth-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-card {
+                padding: 25px 18px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
     <header class="navbar">
 
         <div class="logo">
@@ -28,26 +304,37 @@
             <a href="upload.html">Upload</a>
         </nav>
 
+        <button
+            class="login-btn"
+            onclick="window.location.href='auth.html'">
+            🔐 Login
+        </button>
+
     </header>
 
 
-    <!-- LOGIN -->
-    <main class="auth-page">
+    <!-- =========================
+         LOGIN / SIGNUP
+    ========================= -->
+
+    <main class="auth-wrapper">
 
         <div class="auth-card">
 
             <div class="auth-icon">
-                🔐
+                🎓
             </div>
 
-            <h1>Login / Sign Up</h1>
+            <h1 class="auth-title">
+                EngineeringHub
+            </h1>
 
             <p class="auth-subtitle">
-                Login to access Engineering Question Hub
+                Login or create your account
             </p>
 
 
-            <form id="authForm">
+            <div class="form-group">
 
                 <label for="email">
                     Email
@@ -57,9 +344,13 @@
                     type="email"
                     id="email"
                     placeholder="Enter your email"
-                    required
+                    autocomplete="email"
                 >
 
+            </div>
+
+
+            <div class="form-group">
 
                 <label for="password">
                     Password
@@ -69,38 +360,54 @@
                     type="password"
                     id="password"
                     placeholder="Enter your password"
-                    required
+                    autocomplete="current-password"
                 >
 
+            </div>
+
+
+            <div class="auth-buttons">
 
                 <button
-                    type="button"
-                    class="auth-login-btn"
-                    onclick="loginUser()">
-                    Login
-                </button>
-
-
-                <button
-                    type="button"
-                    class="auth-signup-btn"
+                    class="auth-btn create-btn"
                     onclick="createAccount()">
-                    Create Account
+                    📝 Create Account
                 </button>
 
-            </form>
+                <button
+                    class="auth-btn login-submit-btn"
+                    onclick="loginUser()">
+                    🔐 Login
+                </button>
+
+            </div>
 
 
-            <p id="authStatus" class="auth-status"></p>
+            <div id="authStatus"></div>
+
+
+            <div class="auth-info">
+                🔒 Your account is securely managed through Supabase.
+                <br>
+                👤 After login, you can access your Account section.
+            </div>
 
         </div>
 
     </main>
 
 
+    <!-- =========================
+         SCRIPTS
+    ========================= -->
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+    <script src="supabase.js"></script>
+
     <script src="script.js"></script>
+
     <script src="auth.js"></script>
 
 </body>
-
 </html>
