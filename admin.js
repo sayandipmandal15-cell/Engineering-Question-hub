@@ -14,6 +14,23 @@ const adminStatus =
 const adminPaperList =
     document.getElementById("adminPaperList");
 
+const totalUsers =
+    document.getElementById("totalUsers");
+
+const totalAdmins =
+    document.getElementById("totalAdmins");
+
+const onlineUsers =
+    document.getElementById("onlineUsers");
+
+
+// ============================================================
+// CURRENT USER / OWNER STATUS
+// ============================================================
+
+let currentUser = null;
+let currentUserRole = null;
+
 
 // ============================================================
 // CHECK ADMIN ACCESS
@@ -27,7 +44,6 @@ async function checkAdmin() {
     } = await supabaseClient.auth.getUser();
 
 
-    // Login check
     if (userError || !user) {
 
         adminStatus.textContent =
@@ -39,14 +55,16 @@ async function checkAdmin() {
     }
 
 
-    // Check admin_users table
+    currentUser = user;
+
+
     const {
         data,
         error
     } =
         await supabaseClient
             .from("admin_users")
-            .select("user_id")
+            .select("user_id, role")
             .eq("user_id", user.id)
             .maybeSingle();
 
@@ -92,12 +110,832 @@ async function checkAdmin() {
     }
 
 
-    // Admin verified
+    currentUserRole =
+        data.role || "admin";
+
+
     adminStatus.innerHTML =
         "✅ <strong>Admin access verified.</strong>";
 
 
     return true;
+}
+
+
+// ============================================================
+// CHECK OWNER
+// ============================================================
+
+async function isCurrentUserOwner() {
+
+    if (!currentUser) {
+        return false;
+    }
+
+
+    return currentUserRole === "owner";
+}
+
+
+// ============================================================
+// GET USER PRESENCE
+// ============================================================
+//
+// Online status is read from user_presence when that table exists.
+// A user is considered online when last_seen_at is within 2 minutes.
+// If the presence table/policy is not ready yet, the dashboard keeps
+// working and simply shows Offline/— instead of breaking.
+// ============================================================
+
+async function loadPresenceMap() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("user_presence")
+            .select("user_id, last_seen_at");
+
+
+        if (error) {
+            console.warn("Presence unavailable:", error.message);
+            return new Map();
+        }
+
+
+        const map = new Map();
+
+        const now = Date.now();
+
+        const onlineWindow = 2 * 60 * 1000;
+
+        (data || []).forEach(function (row) {
+
+            if (!row.user_id || !row.last_seen_at) {
+                return;
+            }
+
+            const lastSeen = new Date(row.last_seen_at).getTime();
+
+            if (!Number.isNaN(lastSeen)) {
+                map.set(
+                    row.user_id,
+                    now - lastSeen <= onlineWindow
+                );
+            }
+
+        });
+
+        return map;
+
+    } catch (error) {
+
+        console.warn("Presence load failed:", error);
+        return new Map();
+
+    }
+
+}
+
+
+function getPresenceHTML(isOnline) {
+
+    if (isOnline) {
+        return `
+            <span class="user-presence online-presence">
+                <span class="presence-dot"></span>
+                Online
+            </span>
+        `;
+    }
+
+
+    return `
+        <span class="user-presence offline-presence">
+            <span class="presence-dot"></span>
+            Offline
+        </span>
+    `;
+}
+
+
+// ============================================================
+// LOAD ADMIN OVERVIEW
+// ============================================================
+
+async function loadAdminOverview() {
+
+    if (
+        !totalUsers ||
+        !totalAdmins ||
+        !onlineUsers
+    ) {
+        return;
+    }
+
+
+    // Loading state
+
+    totalUsers.textContent = "…";
+    totalAdmins.textContent = "…";
+    onlineUsers.textContent = "…";
+
+
+    try {
+
+        const isOwner =
+            await isCurrentUserOwner();
+
+
+        // ====================================================
+        // OWNER
+        // Owner RPC থেকে সব users পাওয়া যাবে
+        // ====================================================
+
+        if (isOwner) {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .rpc(
+                        "get_owner_user_list"
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            const users =
+                data || [];
+
+
+            const admins =
+                users.filter(
+                    function (user) {
+
+                        return (
+                            user.role === "admin" ||
+                            user.role === "owner"
+                        );
+
+                    }
+                );
+
+
+            totalUsers.textContent =
+                users.length;
+
+
+            totalAdmins.textContent =
+                admins.length;
+
+
+        } else {
+
+            // =================================================
+            // NORMAL ADMIN
+            // নিজের admin status অনুযায়ী minimum information
+            // =================================================
+
+            totalUsers.textContent =
+                "—";
+
+
+            totalAdmins.textContent =
+                "—";
+
+        }
+
+
+        // ====================================================
+        // ONLINE
+        // Only Owner can see the user presence summary.
+        // ====================================================
+
+        if (isOwner) {
+
+            const presenceMap =
+                await loadPresenceMap();
+
+            let onlineCount = 0;
+
+            presenceMap.forEach(function (isOnline) {
+                if (isOnline) {
+                    onlineCount++;
+                }
+            });
+
+            onlineUsers.textContent =
+                presenceMap.size > 0
+                    ? onlineCount
+                    : "—";
+
+        } else {
+
+            onlineUsers.textContent =
+                "—";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin Overview Error:",
+            error
+        );
+
+
+        totalUsers.textContent =
+            "—";
+
+
+        totalAdmins.textContent =
+            "—";
+
+
+        onlineUsers.textContent =
+            "—";
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD OWNER MANAGEMENT
+// ============================================================
+
+async function loadOwnerManagement() {
+
+    const ownerSection =
+        document.getElementById(
+            "ownerManagement"
+        );
+
+
+    if (!ownerSection) {
+        return;
+    }
+
+
+    const owner =
+        await isCurrentUserOwner();
+
+
+    if (!owner) {
+
+        ownerSection.style.display =
+            "none";
+
+        return;
+    }
+
+
+    ownerSection.style.display =
+        "block";
+
+
+    await loadOwnerUserList();
+}
+
+
+// ============================================================
+// LOAD OWNER USER LIST
+// ============================================================
+
+async function loadOwnerUserList() {
+
+    const ownerInfo =
+        document.getElementById(
+            "ownerInfo"
+        );
+
+    const adminUserList =
+        document.getElementById(
+            "adminUserList"
+        );
+
+    const normalUserList =
+        document.getElementById(
+            "normalUserList"
+        );
+
+
+    if (ownerInfo) {
+
+        ownerInfo.innerHTML =
+            "<p>⏳ Loading...</p>";
+
+    }
+
+
+    if (adminUserList) {
+
+        adminUserList.innerHTML =
+            "<p>⏳ Loading admins...</p>";
+
+    }
+
+
+    if (normalUserList) {
+
+        normalUserList.innerHTML =
+            "<p>⏳ Loading users...</p>";
+
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .rpc(
+                    "get_owner_user_list"
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        const users =
+            data || [];
+
+
+        const owners =
+            users.filter(
+                function (user) {
+
+                    return user.role === "owner";
+
+                }
+            );
+
+
+        const admins =
+            users.filter(
+                function (user) {
+
+                    return user.role === "admin";
+
+                }
+            );
+
+
+        const normalUsers =
+            users.filter(
+                function (user) {
+
+                    return (
+                        !user.role ||
+                        user.role === "user"
+                    );
+
+                }
+            );
+
+
+        const presenceMap =
+            await loadPresenceMap();
+
+
+        // ====================================================
+        // OWNER
+        // ====================================================
+
+        if (ownerInfo) {
+
+            if (owners.length === 0) {
+
+                ownerInfo.innerHTML =
+                    "<p>Owner পাওয়া যায়নি.</p>";
+
+            } else {
+
+                ownerInfo.innerHTML =
+                    owners.map(
+                        function (user) {
+
+                            return `
+
+                                <div class="admin-user-card owner-card">
+
+                                    <div class="admin-user-main">
+
+                                        <div class="admin-user-avatar">
+                                            👑
+                                        </div>
+
+                                        <div>
+
+                                            <div class="admin-user-name admin-name-with-status">
+                                                <span>Owner</span>
+                                                ${getPresenceHTML(
+                                                    presenceMap.get(user.user_id) === true
+                                                )}
+                                            </div>
+
+                                            <div class="admin-user-email">
+                                                ${escapeAdminHTML(
+                                                    user.email
+                                                )}
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="admin-role-badge owner-badge">
+                                        👑 OWNER
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                    ).join("");
+
+            }
+
+        }
+
+
+        // ====================================================
+        // ADMINS
+        // ====================================================
+
+        if (adminUserList) {
+
+            if (admins.length === 0) {
+
+                adminUserList.innerHTML = `
+
+                    <div class="admin-empty-user">
+                        🛡️ এখনো কোনো additional Admin নেই।
+                    </div>
+
+                `;
+
+            } else {
+
+                adminUserList.innerHTML =
+                    admins.map(
+                        function (user) {
+
+                            return `
+
+                                <div class="admin-user-card">
+
+                                    <div class="admin-user-main">
+
+                                        <div class="admin-user-avatar">
+                                            🛡️
+                                        </div>
+
+                                        <div>
+
+                                            <div class="admin-user-name admin-name-with-status">
+                                                <span>Admin</span>
+                                                ${getPresenceHTML(
+                                                    presenceMap.get(user.user_id) === true
+                                                )}
+                                            </div>
+
+                                            <div class="admin-user-email">
+                                                ${escapeAdminHTML(
+                                                    user.email
+                                                )}
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="admin-user-right">
+
+                                        <div class="admin-role-badge admin-badge">
+                                            🛡️ ADMIN
+                                        </div>
+
+
+                                        <button
+                                            type="button"
+                                            class="remove-admin-btn"
+                                            onclick="removeAdminAccess('${escapeAdminAttribute(user.user_id)}')"
+                                        >
+                                            ❌ Remove Admin
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                    ).join("");
+
+            }
+
+        }
+
+
+        // ====================================================
+        // NORMAL USERS
+        // ====================================================
+
+        if (normalUserList) {
+
+            if (normalUsers.length === 0) {
+
+                normalUserList.innerHTML = `
+
+                    <div class="admin-empty-user">
+                        👤 কোনো normal user পাওয়া যায়নি।
+                    </div>
+
+                `;
+
+            } else {
+
+                normalUserList.innerHTML =
+                    normalUsers.map(
+                        function (user) {
+
+                            return `
+
+                                <div class="admin-user-card">
+
+                                    <div class="admin-user-main">
+
+                                        <div class="admin-user-avatar">
+                                            👤
+                                        </div>
+
+                                        <div>
+
+                                            <div class="admin-user-name admin-name-with-status">
+                                                <span>User</span>
+                                                ${getPresenceHTML(
+                                                    presenceMap.get(user.user_id) === true
+                                                )}
+                                            </div>
+
+                                            <div class="admin-user-email">
+                                                ${escapeAdminHTML(
+                                                    user.email
+                                                )}
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="admin-user-right">
+
+                                        <div class="admin-role-badge user-badge">
+                                            👤 USER
+                                        </div>
+
+
+                                        <button
+                                            type="button"
+                                            class="give-admin-btn"
+                                            onclick="giveAdminAccess('${escapeAdminAttribute(user.user_id)}')"
+                                        >
+                                            🛡️ Give Admin Access
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                    ).join("");
+
+            }
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Owner User List Error:",
+            error
+        );
+
+
+        if (ownerInfo) {
+
+            ownerInfo.innerHTML =
+                "<p>❌ Owner information load হয়নি.</p>";
+
+        }
+
+
+        if (adminUserList) {
+
+            adminUserList.innerHTML =
+                "<p>❌ Admin list load হয়নি.</p>";
+
+        }
+
+
+        if (normalUserList) {
+
+            normalUserList.innerHTML =
+                "<p>❌ User list load হয়নি.</p>";
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// GIVE ADMIN ACCESS
+// ============================================================
+
+async function giveAdminAccess(userId) {
+
+    if (!(await isCurrentUserOwner())) {
+
+        alert(
+            "❌ শুধু Owner Admin Access দিতে পারবে।"
+        );
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "এই User-কে Admin Access দিতে চাও?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("admin_users")
+                .insert({
+
+                    user_id:
+                        userId,
+
+                    role:
+                        "admin"
+
+                });
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        alert(
+            "✅ Admin Access দেওয়া হয়েছে।"
+        );
+
+
+        await loadOwnerUserList();
+
+        await loadAdminOverview();
+
+
+    } catch (error) {
+
+        console.error(
+            "Give Admin Access Error:",
+            error
+        );
+
+
+        alert(
+            "❌ Admin Access দেওয়া যায়নি:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// REMOVE ADMIN ACCESS
+// ============================================================
+
+async function removeAdminAccess(userId) {
+
+    if (!(await isCurrentUserOwner())) {
+
+        alert(
+            "❌ শুধু Owner Admin Access remove করতে পারবে।"
+        );
+
+        return;
+    }
+
+
+    if (
+        currentUser &&
+        currentUser.id === userId
+    ) {
+
+        alert(
+            "❌ Owner নিজের Admin Access remove করতে পারবে না।"
+        );
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "এই Admin-এর Admin Access remove করতে চাও?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("admin_users")
+                .delete()
+                .eq(
+                    "user_id",
+                    userId
+                )
+                .eq(
+                    "role",
+                    "admin"
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        alert(
+            "✅ Admin Access remove করা হয়েছে।"
+        );
+
+
+        await loadOwnerUserList();
+
+        await loadAdminOverview();
+
+
+    } catch (error) {
+
+        console.error(
+            "Remove Admin Error:",
+            error
+        );
+
+
+        alert(
+            "❌ Admin Access remove করা যায়নি:\n" +
+            error.message
+        );
+
+    }
+
 }
 
 
@@ -138,6 +976,7 @@ async function loadAdminPapers() {
             error
         );
 
+
         adminPaperList.innerHTML = `
 
             <div class="admin-error">
@@ -145,7 +984,9 @@ async function loadAdminPapers() {
                 ❌ Papers load হয়নি.
 
                 <p>
-                    ${escapeAdminHTML(error.message)}
+                    ${escapeAdminHTML(
+                        error.message
+                    )}
                 </p>
 
             </div>
@@ -175,7 +1016,6 @@ async function loadAdminPapers() {
     adminPaperList.innerHTML = "";
 
 
-    // Create every paper card
     data.forEach(function (paper) {
 
         const card =
@@ -235,9 +1075,6 @@ async function loadAdminPapers() {
 
             <div class="admin-actions">
 
-
-                <!-- VIEW -->
-
                 <a
                     href="${escapeAdminAttribute(
                         paper.file_url
@@ -250,8 +1087,6 @@ async function loadAdminPapers() {
                 </a>
 
 
-                <!-- EDIT -->
-
                 <button
                     type="button"
                     class="admin-action-btn edit-btn"
@@ -261,8 +1096,6 @@ async function loadAdminPapers() {
                 </button>
 
 
-                <!-- DELETE -->
-
                 <button
                     type="button"
                     class="admin-action-btn delete-btn"
@@ -270,7 +1103,6 @@ async function loadAdminPapers() {
                 >
                     🗑️ Delete
                 </button>
-
 
             </div>
 
@@ -292,7 +1124,6 @@ async function editPaper(id) {
 
     try {
 
-        // Get selected paper
         const {
             data: paper,
             error
@@ -319,7 +1150,6 @@ async function editPaper(id) {
         }
 
 
-        // Remove old modal if exists
         const oldModal =
             document.getElementById(
                 "editPaperModal"
@@ -331,7 +1161,6 @@ async function editPaper(id) {
         }
 
 
-        // Create modal
         const modal =
             document.createElement("div");
 
@@ -344,11 +1173,7 @@ async function editPaper(id) {
 
             <div class="edit-modal-overlay">
 
-
                 <div class="edit-modal-box">
-
-
-                    <!-- HEADER -->
 
                     <div class="edit-modal-header">
 
@@ -359,8 +1184,7 @@ async function editPaper(id) {
                             </h2>
 
                             <p>
-                                Question paper-এর information
-                                update করো
+                                Question paper-এর information update করো
                             </p>
 
                         </div>
@@ -377,14 +1201,7 @@ async function editPaper(id) {
                     </div>
 
 
-                    <!-- FORM -->
-
-                    <form
-                        id="editPaperForm"
-                    >
-
-
-                        <!-- UNIVERSITY -->
+                    <form id="editPaperForm">
 
                         <label>
                             University / Board
@@ -400,8 +1217,6 @@ async function editPaper(id) {
                         >
 
 
-                        <!-- BRANCH -->
-
                         <label>
                             Branch
                         </label>
@@ -412,12 +1227,9 @@ async function editPaper(id) {
                             value="${escapeAdminAttribute(
                                 paper.branch
                             )}"
-                            placeholder="CSE, ECE, EEE..."
                             required
                         >
 
-
-                        <!-- SEMESTER -->
 
                         <label>
                             Semester
@@ -429,12 +1241,9 @@ async function editPaper(id) {
                             value="${escapeAdminAttribute(
                                 paper.semester
                             )}"
-                            placeholder="3rd Semester"
                             required
                         >
 
-
-                        <!-- SUBJECT -->
 
                         <label>
                             Subject
@@ -449,8 +1258,6 @@ async function editPaper(id) {
                             required
                         >
 
-
-                        <!-- YEAR -->
 
                         <label>
                             Exam Year
@@ -468,28 +1275,22 @@ async function editPaper(id) {
                         >
 
 
-                        <!-- DESCRIPTION -->
-
                         <label>
                             Description
                         </label>
 
                         <textarea
                             id="editDescription"
-                            placeholder="Additional information..."
                         >${escapeAdminHTML(
                             paper.description || ""
                         )}</textarea>
 
-
-                        <!-- CURRENT FILE -->
 
                         <div class="current-file-box">
 
                             <div class="current-file-title">
                                 📄 Current Question Paper
                             </div>
-
 
                             <a
                                 href="${escapeAdminAttribute(
@@ -506,8 +1307,6 @@ async function editPaper(id) {
 
                         </div>
 
-
-                        <!-- REPLACE FILE -->
 
                         <label>
                             Replace Question Paper
@@ -528,19 +1327,13 @@ async function editPaper(id) {
                         </p>
 
 
-                        <!-- STATUS -->
-
                         <div
                             id="editStatus"
                             class="edit-status"
                         ></div>
 
 
-                        <!-- BUTTONS -->
-
-                        <div
-                            class="edit-modal-actions"
-                        >
+                        <div class="edit-modal-actions">
 
                             <button
                                 type="submit"
@@ -560,7 +1353,6 @@ async function editPaper(id) {
 
                         </div>
 
-
                     </form>
 
                 </div>
@@ -573,7 +1365,6 @@ async function editPaper(id) {
         document.body.appendChild(modal);
 
 
-        // Form submit
         const form =
             document.getElementById(
                 "editPaperForm"
@@ -637,7 +1428,6 @@ async function saveEditedPaper(
 
     try {
 
-        // Get values
         const university =
             document
                 .getElementById(
@@ -700,10 +1490,6 @@ async function saveEditedPaper(
                 .files[0];
 
 
-        // ====================================================
-        // VALIDATION
-        // ====================================================
-
         if (
             !university ||
             !branch ||
@@ -738,18 +1524,12 @@ async function saveEditedPaper(
         }
 
 
-        // ====================================================
-        // FILE VALIDATION
-        // ====================================================
-
         if (newFile) {
 
             const allowedTypes = [
 
                 "application/pdf",
-
                 "image/jpeg",
-
                 "image/png"
 
             ];
@@ -768,7 +1548,6 @@ async function saveEditedPaper(
             }
 
 
-            // 20 MB
             const maxSize =
                 20 * 1024 * 1024;
 
@@ -787,10 +1566,6 @@ async function saveEditedPaper(
         }
 
 
-        // ====================================================
-        // DISABLE SAVE BUTTON
-        // ====================================================
-
         if (saveButton) {
 
             saveButton.disabled =
@@ -805,10 +1580,6 @@ async function saveEditedPaper(
         status.textContent =
             "⏳ Question paper update হচ্ছে...";
 
-
-        // ====================================================
-        // DATA TO UPDATE
-        // ====================================================
 
         let updateData = {
 
@@ -832,10 +1603,6 @@ async function saveEditedPaper(
 
         };
 
-
-        // ====================================================
-        // NEW FILE UPLOAD
-        // ====================================================
 
         let newFilePath =
             null;
@@ -868,7 +1635,6 @@ async function saveEditedPaper(
                 "⏳ নতুন file upload হচ্ছে...";
 
 
-            // Unique file name
             const fileName =
                 Date.now() +
                 "_" +
@@ -888,7 +1654,6 @@ async function saveEditedPaper(
                 fileName;
 
 
-            // Upload
             const {
                 error: uploadError
             } =
@@ -908,7 +1673,6 @@ async function saveEditedPaper(
             }
 
 
-            // Public URL
             const {
                 data: publicUrlData
             } =
@@ -936,10 +1700,6 @@ async function saveEditedPaper(
         }
 
 
-        // ====================================================
-        // UPDATE DATABASE
-        // ====================================================
-
         status.textContent =
             "⏳ Database update হচ্ছে...";
 
@@ -958,10 +1718,8 @@ async function saveEditedPaper(
                 );
 
 
-        // If DB update fails
         if (updateError) {
 
-            // Remove newly uploaded file
             if (newFilePath) {
 
                 await supabaseClient
@@ -980,10 +1738,6 @@ async function saveEditedPaper(
         }
 
 
-        // ====================================================
-        // DELETE OLD FILE
-        // ====================================================
-
         if (newFilePath) {
 
             const oldFilePath =
@@ -998,41 +1752,19 @@ async function saveEditedPaper(
                 newFilePath
             ) {
 
-                status.textContent =
-                    "⏳ পুরোনো file remove হচ্ছে...";
-
-
-                const {
-                    error:
-                        deleteOldError
-                } =
-                    await supabaseClient
-                        .storage
-                        .from(
-                            "question-papers"
-                        )
-                        .remove([
-                            oldFilePath
-                        ]);
-
-
-                if (deleteOldError) {
-
-                    console.warn(
-                        "Old file delete failed:",
-                        deleteOldError
-                    );
-
-                }
+                await supabaseClient
+                    .storage
+                    .from(
+                        "question-papers"
+                    )
+                    .remove([
+                        oldFilePath
+                    ]);
 
             }
 
         }
 
-
-        // ====================================================
-        // SUCCESS
-        // ====================================================
 
         status.innerHTML =
             "✅ <strong>Successfully updated!</strong>";
@@ -1100,7 +1832,6 @@ async function deletePaper(id) {
 
     try {
 
-        // Get paper
         const {
             data: paper,
             error: findError
@@ -1116,10 +1847,6 @@ async function deletePaper(id) {
             throw findError;
         }
 
-
-        // ====================================================
-        // DELETE STORAGE FILE
-        // ====================================================
 
         const filePath =
             getStorageFilePath(
@@ -1150,10 +1877,6 @@ async function deletePaper(id) {
         }
 
 
-        // ====================================================
-        // DELETE DATABASE ROW
-        // ====================================================
-
         const {
             error: databaseError
         } =
@@ -1170,10 +1893,6 @@ async function deletePaper(id) {
             throw databaseError;
         }
 
-
-        // ====================================================
-        // REFRESH
-        // ====================================================
 
         await loadAdminPapers();
 
@@ -1223,7 +1942,6 @@ function getStorageFilePath(
     paper
 ) {
 
-    // New records
     if (
         paper.file_path &&
         paper.file_path.trim() !== ""
@@ -1234,7 +1952,6 @@ function getStorageFilePath(
     }
 
 
-    // Old records
     if (!paper.file_url) {
         return null;
     }
@@ -1339,8 +2056,494 @@ const adminStyle =
 
 adminStyle.textContent = `
 
+
 /* =========================================================
-   ADMIN PAPER CARD
+   ADMIN OVERVIEW
+   ========================================================= */
+
+.admin-overview-section {
+
+    margin-top: 30px;
+
+    margin-bottom: 35px;
+
+}
+
+
+.admin-overview-header {
+
+    margin-bottom: 20px;
+
+}
+
+
+.admin-overview-header h2 {
+
+    margin: 0 0 6px;
+
+    font-size: 25px;
+
+    color: #111827;
+
+}
+
+
+.admin-overview-header p {
+
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+}
+
+
+.admin-overview-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+
+}
+
+
+.overview-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 180px;
+
+    padding: 24px;
+
+    border-radius: 20px;
+
+    color: #ffffff;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 12px 30px
+        rgba(15, 23, 42, 0.12);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.overview-card:hover {
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 18px 35px
+        rgba(15, 23, 42, 0.18);
+
+}
+
+
+.users-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+}
+
+
+.admins-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #9333ea
+        );
+
+}
+
+
+.online-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #059669,
+            #10b981
+        );
+
+}
+
+
+.overview-card-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+
+}
+
+
+.overview-icon {
+
+    width: 52px;
+
+    height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.20
+        );
+
+    font-size: 26px;
+
+    backdrop-filter:
+        blur(5px);
+
+}
+
+
+.overview-label {
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.18
+        );
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+}
+
+
+.overview-number {
+
+    font-size: 42px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    margin-bottom: 10px;
+
+}
+
+
+.overview-title {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    margin-bottom: 5px;
+
+}
+
+
+.overview-description {
+
+    font-size: 13px;
+
+    opacity: 0.85;
+
+}
+
+
+.overview-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 120px;
+
+    height: 120px;
+
+    border-radius: 50%;
+
+    right: -35px;
+
+    bottom: -45px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.10
+        );
+
+}
+
+
+/* =========================================================
+   USER / ADMIN MANAGEMENT
+   ========================================================= */
+
+.admin-user-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin-top: 15px;
+
+}
+
+
+.admin-user-card {
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    padding: 16px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    box-shadow:
+        0 4px 18px
+        rgba(15, 23, 42, 0.06);
+
+}
+
+
+.admin-user-main {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    min-width: 0;
+
+}
+
+
+.admin-user-avatar {
+
+    width: 48px;
+
+    height: 48px;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 23px;
+
+    flex-shrink: 0;
+
+}
+
+
+.admin-user-name {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color: #111827;
+
+    margin-bottom: 4px;
+
+}
+
+
+.admin-user-email {
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    word-break: break-all;
+
+}
+
+
+.admin-user-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-shrink: 0;
+
+}
+
+
+.admin-role-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+}
+
+
+.owner-badge {
+
+    background: #fef3c7;
+
+    color: #92400e;
+
+}
+
+
+.admin-badge {
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+}
+
+
+.user-badge {
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+}
+
+
+.give-admin-btn,
+.remove-admin-btn {
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 9px 12px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+.give-admin-btn {
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+}
+
+
+.give-admin-btn:hover {
+
+    background: #1d4ed8;
+
+}
+
+
+.remove-admin-btn {
+
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+}
+
+
+.remove-admin-btn:hover {
+
+    background: #fecaca;
+
+}
+
+
+.admin-empty-user {
+
+    background: #ffffff;
+
+    border: 1px dashed #cbd5e1;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    text-align: center;
+
+    color: #64748b;
+
+}
+
+
+/* =========================================================
+   PAPER CARD
    ========================================================= */
 
 .admin-paper-card {
@@ -1444,7 +2647,7 @@ adminStyle.textContent = `
 
 
 /* =========================================================
-   ACTION BUTTONS
+   PAPER ACTIONS
    ========================================================= */
 
 .admin-actions {
@@ -1484,17 +2687,14 @@ adminStyle.textContent = `
 
     cursor: pointer;
 
-    transition:
-        0.2s ease;
-
     box-sizing: border-box;
 
 }
 
 
-/* View */
-
-.view-btn {
+.view-btn,
+.edit-btn,
+.delete-btn {
 
     background: #2563eb;
 
@@ -1503,60 +2703,17 @@ adminStyle.textContent = `
 }
 
 
-.view-btn:hover {
-
-    background: #1d4ed8;
-
-    transform:
-        translateY(-1px);
-
-}
-
-
-/* Edit */
-
-.edit-btn {
-
-    background: #2563eb;
-
-    color: #ffffff;
-
-}
-
-
-.edit-btn:hover {
-
-    background: #1d4ed8;
-
-    transform:
-        translateY(-1px);
-
-}
-
-
-/* Delete */
-
-.delete-btn {
-
-    background: #2563eb;
-
-    color: #ffffff;
-
-}
-
-
+.view-btn:hover,
+.edit-btn:hover,
 .delete-btn:hover {
 
     background: #1d4ed8;
-
-    transform:
-        translateY(-1px);
 
 }
 
 
 /* =========================================================
-   LOADING / EMPTY / ERROR
+   LOADING / ERROR
    ========================================================= */
 
 .admin-loading,
@@ -1583,7 +2740,7 @@ adminStyle.textContent = `
 
 .admin-access-denied {
 
-    background: #fff;
+    background: #ffffff;
 
     padding: 30px;
 
@@ -1709,19 +2866,8 @@ adminStyle.textContent = `
 
     cursor: pointer;
 
-    flex-shrink: 0;
-
 }
 
-
-.edit-close-btn:hover {
-
-    background: #e2e8f0;
-
-}
-
-
-/* Form */
 
 .edit-modal-box label {
 
@@ -1758,18 +2904,6 @@ adminStyle.textContent = `
 }
 
 
-.edit-modal-box input:focus,
-.edit-modal-box textarea:focus {
-
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.10);
-
-}
-
-
 .edit-modal-box textarea {
 
     min-height: 100px;
@@ -1778,8 +2912,6 @@ adminStyle.textContent = `
 
 }
 
-
-/* Current file */
 
 .current-file-box {
 
@@ -1816,13 +2948,6 @@ adminStyle.textContent = `
 }
 
 
-.current-file-box a:hover {
-
-    text-decoration: underline;
-
-}
-
-
 .edit-help-text {
 
     margin-top: 7px;
@@ -1833,8 +2958,6 @@ adminStyle.textContent = `
 
 }
 
-
-/* Status */
 
 .edit-status {
 
@@ -1848,8 +2971,6 @@ adminStyle.textContent = `
 
 }
 
-
-/* Modal buttons */
 
 .edit-modal-actions {
 
@@ -1890,22 +3011,6 @@ adminStyle.textContent = `
 }
 
 
-.edit-save-btn:hover {
-
-    background: #1d4ed8;
-
-}
-
-
-.edit-save-btn:disabled {
-
-    opacity: 0.6;
-
-    cursor: not-allowed;
-
-}
-
-
 .edit-cancel-btn {
 
     background: #e5e7eb;
@@ -1915,31 +3020,61 @@ adminStyle.textContent = `
 }
 
 
-.edit-cancel-btn:hover {
-
-    background: #d1d5db;
-
-}
-
-
 /* =========================================================
    MOBILE
    ========================================================= */
 
+@media (max-width: 800px) {
+
+    .admin-overview-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .overview-card {
+
+        min-height: 160px;
+
+    }
+
+}
+
+
 @media (max-width: 700px) {
+
+    .admin-user-card {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .admin-user-right {
+
+        width: 100%;
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .give-admin-btn,
+    .remove-admin-btn {
+
+        flex: 1;
+
+    }
+
 
     .admin-paper-card {
 
         flex-direction: column;
 
         align-items: stretch;
-
-    }
-
-
-    .admin-paper-info {
-
-        align-items: flex-start;
 
     }
 
@@ -1958,8 +3093,6 @@ adminStyle.textContent = `
 
     .admin-action-btn {
 
-        width: 100%;
-
         min-width: 0;
 
         padding: 10px 7px;
@@ -1970,6 +3103,131 @@ adminStyle.textContent = `
 
 }
 
+
+/* =========================================================
+   COLORFUL USER STATUS
+   ========================================================= */
+
+.admin-name-with-status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.user-presence {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.presence-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.online-presence {
+    color: #047857;
+    background: #d1fae5;
+}
+
+.online-presence .presence-dot {
+    background: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+}
+
+.offline-presence {
+    color: #64748b;
+    background: #f1f5f9;
+}
+
+.offline-presence .presence-dot {
+    background: #94a3b8;
+}
+
+.owner-card {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb, #ffffff);
+}
+
+.owner-card .admin-user-avatar {
+    background: #fef3c7;
+}
+
+.admin-user-card:not(.owner-card) {
+    background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+.admin-user-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.11);
+    transition: 0.2s ease;
+}
+
+.admin-user-card:nth-child(even) .admin-user-avatar {
+    background: #f3e8ff;
+}
+
+.admin-user-card:nth-child(odd) .admin-user-avatar {
+    background: #dbeafe;
+}
+
+.admin-paper-card:nth-child(3n + 1) {
+    border-left: 6px solid #2563eb;
+}
+
+.admin-paper-card:nth-child(3n + 2) {
+    border-left: 6px solid #7c3aed;
+}
+
+.admin-paper-card:nth-child(3n) {
+    border-left: 6px solid #059669;
+}
+
+.view-btn {
+    background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+}
+
+.edit-btn {
+    background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+}
+
+.view-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover {
+    filter: brightness(0.94);
+}
+
+.admin-access-denied {
+    border: 1px solid #fecaca;
+    background: linear-gradient(135deg, #fff1f2, #ffffff);
+}
+
+.admin-loading {
+    border: 1px solid #bfdbfe;
+    background: linear-gradient(135deg, #eff6ff, #ffffff);
+}
+
+.admin-empty {
+    border: 1px dashed #cbd5e1;
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+}
+
+.admin-error {
+    border: 1px solid #fecaca;
+    background: linear-gradient(135deg, #fef2f2, #ffffff);
+}
 
 @media (max-width: 500px) {
 
@@ -2020,10 +3278,25 @@ async function startAdminDashboard() {
     }
 
 
+    // Load colorful overview
+
+    await loadAdminOverview();
+
+
+    // Load question papers
+
     await loadAdminPapers();
+
+
+    // Owner-only management
+
+    await loadOwnerManagement();
 
 }
 
 
-// Start
+// ============================================================
+// START
+// ============================================================
+
 startAdminDashboard();
