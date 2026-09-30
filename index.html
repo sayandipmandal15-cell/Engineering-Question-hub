@@ -9,8 +9,11 @@
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
+
 <body>
 
     <!-- ================= NAVBAR ================= -->
@@ -29,10 +32,13 @@
             <a href="upload.html">Upload</a>
         </nav>
 
+        <!-- Login / Account button
+             script.js login status অনুযায়ী
+             এই button-এর text ও action পরিবর্তন করবে -->
         <button
-          class="login-btn"
-          onclick="window.location.href='auth.html'">
-         🔐 Login
+            class="login-btn"
+            onclick="window.location.href='auth.html'">
+            🔐 Login
         </button>
 
     </header>
@@ -107,8 +113,10 @@
                 <div class="card-icon">💻</div>
                 <h3>CSE</h3>
                 <p>Computer Science & Engineering</p>
-                <button onclick="window.location.href='question-bank.html?branch=CSE'">
-                  Explore →
+
+                <button
+                    onclick="window.location.href='question-bank.html?branch=CSE'">
+                    Explore →
                 </button>
             </div>
 
@@ -117,8 +125,10 @@
                 <div class="card-icon">📡</div>
                 <h3>ECE</h3>
                 <p>Electronics & Communication</p>
-                <button onclick="window.location.href='question-bank.html?branch=ECE'">
-                 Explore →
+
+                <button
+                    onclick="window.location.href='question-bank.html?branch=ECE'">
+                    Explore →
                 </button>
             </div>
 
@@ -127,9 +137,11 @@
                 <div class="card-icon">⚡</div>
                 <h3>EE</h3>
                 <p>Electrical Engineering</p>
-                <button onclick="window.location.href='question-bank.html?branch=EE'">
-                  Explore →
-                 </button>
+
+                <button
+                    onclick="window.location.href='question-bank.html?branch=EE'">
+                    Explore →
+                </button>
             </div>
 
 
@@ -137,8 +149,10 @@
                 <div class="card-icon">⚙️</div>
                 <h3>ME</h3>
                 <p>Mechanical Engineering</p>
-                <button onclick="window.location.href='question-bank.html?branch=ME'">
-                 Explore →
+
+                <button
+                    onclick="window.location.href='question-bank.html?branch=ME'">
+                    Explore →
                 </button>
             </div>
 
@@ -168,7 +182,9 @@
                 solution and important concepts.
             </p>
 
-            <button class="primary-btn" onclick="openAI()">
+            <button
+                class="primary-btn"
+                onclick="openAI()">
                 Try AI Solver →
             </button>
 
@@ -221,32 +237,50 @@
         <div class="analysis-grid">
 
             <div class="analysis-card">
+
                 <span>📈</span>
-                <h3>Repeated Topics</h3>
+
+                <h3>
+                    Repeated Topics
+                </h3>
+
                 <p>
                     Find topics that appeared
                     multiple times in previous exams.
                 </p>
+
             </div>
 
 
             <div class="analysis-card">
+
                 <span>⭐</span>
-                <h3>Important Topics</h3>
+
+                <h3>
+                    Important Topics
+                </h3>
+
                 <p>
                     Identify topics that deserve
                     more preparation based on historical patterns.
                 </p>
+
             </div>
 
 
             <div class="analysis-card">
+
                 <span>📊</span>
-                <h3>Year Analysis</h3>
+
+                <h3>
+                    Year Analysis
+                </h3>
+
                 <p>
                     Compare question patterns
                     across different examination years.
                 </p>
+
             </div>
 
         </div>
@@ -276,7 +310,9 @@
         </div>
 
 
-        <button class="primary-btn" onclick="uploadQuestion()">
+        <button
+            class="primary-btn"
+            onclick="uploadQuestion()">
             ⬆️ Upload Question Paper
         </button>
 
@@ -302,9 +338,10 @@
     </footer>
 
 
-    <!-- JavaScript -->
+    <!-- ================= JAVASCRIPT ================= -->
 
-   <script src="script.js"></script>
+    <!-- script.js root folder-এ আছে -->
+    <script src="script.js"></script>
 
 </body>
 </html>
